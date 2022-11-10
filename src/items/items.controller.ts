@@ -15,12 +15,12 @@ export class ItemsController {
   constructor(private readonly ItemsService: ItemsService) {}
 
   @Post()
-  addItem(
+  async addItem(
     @Body('title') itemTitle: string,
     @Body('description') itemDesc: string,
     @Body('price') itemPrice: number,
   ) {
-    const generetedId = this.ItemsService.insertItem(
+    const generetedId = await this.ItemsService.insertItem(
       itemTitle,
       itemDesc,
       itemPrice,
@@ -29,8 +29,9 @@ export class ItemsController {
   }
 
   @Get()
-  getAllItems() {
-    return this.ItemsService.fetchItems();
+  async getAllItems() {
+    const items  = await this.ItemsService.fetchItems();
+    return items;
   }
 
   @Get(':id')

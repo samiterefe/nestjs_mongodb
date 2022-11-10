@@ -1,19 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
 import { Item } from './item.model';
 
 @Injectable()
 export class ItemsService {
   private items: Item[] = [];
 
-  insertItem(title: string, description: string, price: number) {
-    const itemId = Math.random().toString();
-    const newItem = new Item(itemId, title, description, price);
-    this.items.push(newItem);
-    return itemId;
+  constructor(@InjectModel('Item') private readonly ItemModel: Model<Item>) {}
+
+  async insertItem(title: string, description: string, price: number) {
+    const newItem = new this.ItemModel({
+      title,
+      description,
+      price,
+    });
+    const savedItem = await newItem.save();
+    console.log(savedItem);
+    return savedItem.id as string;
   }
 
-  fetchItems() {
-    return [...this.items];
+  async fetchItems() {
+    const items = await this.ItemModel.find().exec();
+    return items;
   }
   fetchOneItem(itemmId: string) {
     const item = this.findItem(itemmId)[0];
@@ -54,7 +65,7 @@ export class ItemsService {
     return [item, itemIndex];
   }
 
-  removeItem(itemmId: string){
+  removeItem(itemmId: string) {
     const index = this.findItem(itemmId)[1];
     this.items.splice(index, 1);
   }
