@@ -30,7 +30,7 @@ export class ItemsController {
 
   @Get()
   async getAllItems() {
-    const items  = await this.ItemsService.fetchItems();
+    const items = await this.ItemsService.fetchItems();
     return items;
   }
 
@@ -49,7 +49,8 @@ export class ItemsController {
     return null;
   }
   @Delete(':id')
-  deleteItem(@Param('id') itemId: string) {
-    return this.ItemsService.removeItem(itemId);
+  async removeItem(@Param('id') prodId: string) {
+      await this.ItemsService.removeItem(prodId);
+      return null;
   }
 }

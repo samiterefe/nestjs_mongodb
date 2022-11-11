@@ -43,16 +43,15 @@ export class ItemsService {
   async updateItem(
     itemmId: string,
     title: string,
-    description: string,
+    desc: string,
     price: number,
   ) {
-    const updatedItem = await this.findItem(itemmId);
-
+    const updatedItem = await this.finditem(itemId);
     if (title) {
       updatedItem.title = title;
     }
-    if (description) {
-      updatedItem.description = description;
+    if (desc) {
+      updatedItem.description = desc;
     }
     if (price) {
       updatedItem.price = price;
@@ -60,22 +59,23 @@ export class ItemsService {
     updatedItem.save();
   }
 
-  private async findItem(id: string): Promise<Item> {
-    let item;
-    try {
-      const item = await this.ItemModel.findById(id);
-    } catch (error) {
-      throw new NotFoundException('cound not found a item.');
+  async removeItem(prodId: string) {
+    const result = await this.ItemModel.deleteOne({_id: prodId}).exec();
+    if (result.n === 0) {
+      throw new NotFoundException('Could not find item.');
     }
-
-    if (!item) {
-      throw new NotFoundException('cound not found a item.');
-    }
-    return item;
   }
 
-  removeItem(itemmId: string) {
-    const index = this.findItem(itemmId)[1];
-    this.items.splice(index, 1);
+  private async finditem(id: string): Promise<item> {
+    let item;
+    try {
+      item = await this.ItemModel.findById(id).exec();
+    } catch (error) {
+      throw new NotFoundException('Could not find item.');
+    }
+    if (!item) {
+      throw new NotFoundException('Could not find item.');
+    }
+    return item;
   }
 }
